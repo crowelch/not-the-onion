@@ -1,0 +1,107 @@
+<html>
+<head>
+	<title>Not? The Onion</title>
+</head>
+<body>
+
+	<p id='article title'>   </p>
+
+	<script type="text/javascript" charset="utf-8">
+
+ 		var articlePool = [];
+
+ 		var source;
+
+ 		var theOnionComplete = false;
+ 		var notTheOnionComplete = false;
+
+        var theOnionURL = "http://www.reddit.com/r/theonion.json"; 
+        var notTheOnionURL = "http://www.reddit.com/r/nottheonion.json";
+ 
+        var theOnionRequest = new XMLHttpRequest();
+        var notTheOnionRequest = new XMLHttpRequest();
+ 
+        theOnionRequest.onreadystatechange = function() {
+            if (theOnionRequest.readyState == 4 && theOnionRequest.status == 200) {
+                var myArr = JSON.parse(theOnionRequest.responseText);
+                //console.log(myArr.data.children);
+
+                myJSOnArray = myArr.data.children;
+
+                myJSOnArray.forEach(function(article) {
+                	articlePool.push([article.data.title.toString(), 'the onion']);
+                	//console.log(article.data.title);
+                });
+                theOnionComplete = true;
+        	} else {
+
+        	}
+        }
+
+        notTheOnionRequest.onreadystatechange = function() {
+            if (notTheOnionRequest.readyState == 4 && notTheOnionRequest.status == 200) {
+                var myArr = JSON.parse(notTheOnionRequest.responseText);
+                //console.log(myArr.data.children);
+
+                myJSOnArray = myArr.data.children;
+
+                myJSOnArray.forEach(function(article) {
+                	articlePool.push([article.data.title.toString(), 'not the onion']);
+                	//console.log(article.data.title);
+                });
+                notTheOnionComplete = true;
+        	} else {
+
+        	}
+
+        }
+
+
+
+        theOnionRequest.open('get', theOnionURL, true);
+        notTheOnionRequest.open('get', notTheOnionURL, true);
+        theOnionRequest.send();
+        notTheOnionRequest.send();
+
+        var updateArticleTitle = function() {
+        	if (theOnionComplete && notTheOnionComplete) {
+		        var articleTitleHTMLElement = document.getElementById('article title');
+    		    var randomIndex = Math.floor(Math.random() * articlePool.length);
+    		    var randomTitle = articlePool[randomIndex][0];
+        		console.log("article title: " + randomTitle);
+        		console.log("source: " + articlePool[randomIndex][1]);
+        		source = articlePool[randomIndex][1]
+        		articleTitleHTMLElement.innerHTML = randomTitle;
+        	} else {
+        		window.setTimeout(updateArticleTitle, 200);
+        	}
+        }
+
+    	setTimeout(updateArticleTitle(), 100);
+
+
+        function theOnionFunction() {
+			console.log("The Onion:\n");
+			if(source === 'the onion') {
+				alert('correct!');
+			} else {
+				alert('wrong!');
+			}
+        }
+
+        function notTheOnionFunction() {
+ 		    console.log("\nNot the Onion:\n");
+ 		    if (source === 'not the onion') {
+ 		    	alert('correct!');
+			} else {
+				alert('wrong!');
+			}
+        }
+ 
+	</script>
+
+	<input id="The Onion" type="button" value="the onion" onclick="theOnionFunction();" />
+	<input id="Not the Onion" type="button" value="not the onion" onclick="notTheOnionFunction();" />
+
+</body>
+</html>
